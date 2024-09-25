@@ -1,0 +1,92 @@
+.ticket {
+  display: inline-block;
+  width: 100%;
+  text-decoration: none;
+  box-sizing: border-box;
+  padding: 20px;
+  background-color: white;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  -webkit-box-shadow: 0px 0px 25px 0px rgba(34, 60, 80, 0.13);
+  -moz-box-shadow: 0px 0px 25px 0px rgba(34, 60, 80, 0.13);
+  box-shadow: 0px 0px 25px 0px rgba(34, 60, 80, 0.13);
+  transition: all 0.5s ease-out;
+
+  &:hover,
+  &:focus {
+    -webkit-box-shadow: 0px 0px 25px 0px rgba(34, 60, 80, 0.4);
+    -moz-box-shadow: 0px 0px 25px 0px rgba(34, 60, 80, 0.4);
+    box-shadow: 0px 0px 25px 0px rgba(34, 60, 80, 0.4);
+  }
+}
+
+.ticket__price-and-company-logo {
+  display: flex;
+  height: 36px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.ticket__price {
+  font-size: 24px;
+  color: #2196f3;
+}
+
+.ticket__logo {
+  height: 100%;
+}
+
+.ticket__company {
+  font-size: 24px;
+  color: #4a4a4a;
+}
+
+.ticket__flight-information,
+.last-ticket {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.ticket__country-of-flight-and-time {
+  width: 90px;
+  text-align: left;
+}
+
+.ticket__flight-duration {
+  width: 80px;
+  text-align: left;
+}
+
+.ticket__information-about-transfer {
+  width: 110px;
+  text-align: left;
+}
+
+.ticket__description-header {
+  margin: 0;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  line-height: 18px;
+  color: #a0b0b9;
+}
+
+.ticket__description-text {
+  margin: 0;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 21px;
+  color: #4a4a4a;
+}
+
+.last-ticket {
+  margin-bottom: 0;
+}
+
+@media (max-width: 500px) {
+  .ticket {
+    padding: 15px;
+  }
+}

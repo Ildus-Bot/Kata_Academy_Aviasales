@@ -1,0 +1,10 @@
+.ticket-list {
+  max-width: 100%;
+}
+
+.ticket-list__message {
+  line-height: 30px;
+  color: #a0b0b9;
+  font-size: 15px;
+  text-align: center;
+}

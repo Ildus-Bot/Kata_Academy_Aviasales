@@ -1,0 +1,45 @@
+html {
+  background-color: #f3f7fa;
+  font-family: 'Open Sans';
+  font-weight: 600;
+  font-size: 12px;
+  padding-bottom: 50px;
+}
+
+.wrapper {
+  max-width: 754px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.logo {
+  display: block;
+  margin: 0 auto;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.column {
+  max-width: 502px;
+  width: 100%;
+}
+
+.main {
+  display: flex;
+  justify-content: space-between;
+}
+
+@media (max-width: 800px) {
+  .wrapper {
+    position: relative;
+  }
+
+  .main {
+    display: block;
+  }
+
+  .column {
+    max-width: 754px;
+    position: relative;
+  }
+}
