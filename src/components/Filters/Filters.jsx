@@ -1,12 +1,14 @@
 import React from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { changeFilterCheckboxes } from '../../actions';
 
 import classes from './Filters.module.scss';
 
-function Filters({ selectedFiltersCheckbox, changeFilterCheckboxes }) {
+export default function Filters() {
+  const selectedFiltersCheckbox = useSelector((state) => state.selectedFiltersCheckbox);
+  const dispatch = useDispatch();
+
   return (
     <div className={classes.filters}>
       <p className={classes.filters__header}>КОЛИЧЕСТВО ПЕРЕСАДОК</p>
@@ -16,7 +18,7 @@ function Filters({ selectedFiltersCheckbox, changeFilterCheckboxes }) {
             <input
               type="checkbox"
               checked={selectedFiltersCheckbox.all}
-              onChange={() => changeFilterCheckboxes('all')}
+              onChange={() => dispatch(changeFilterCheckboxes('all'))}
               name="transfer"
             />
             <p>Все</p>
@@ -27,7 +29,7 @@ function Filters({ selectedFiltersCheckbox, changeFilterCheckboxes }) {
             <input
               type="checkbox"
               checked={selectedFiltersCheckbox.withoutTransfer}
-              onChange={() => changeFilterCheckboxes('withoutTransfer')}
+              onChange={() => dispatch(changeFilterCheckboxes('withoutTransfer'))}
               name="transfer"
             />
             <p>Без пересадок</p>
@@ -38,7 +40,7 @@ function Filters({ selectedFiltersCheckbox, changeFilterCheckboxes }) {
             <input
               type="checkbox"
               checked={selectedFiltersCheckbox.oneTransfer}
-              onChange={() => changeFilterCheckboxes('oneTransfer')}
+              onChange={() => dispatch(changeFilterCheckboxes('oneTransfer'))}
               name="transfer"
             />
             <p>1 пересадка</p>
@@ -49,7 +51,7 @@ function Filters({ selectedFiltersCheckbox, changeFilterCheckboxes }) {
             <input
               type="checkbox"
               checked={selectedFiltersCheckbox.twoTransfer}
-              onChange={() => changeFilterCheckboxes('twoTransfer')}
+              onChange={() => dispatch(changeFilterCheckboxes('twoTransfer'))}
               name="transfer"
             />
             <p>2 пересадки</p>
@@ -60,7 +62,7 @@ function Filters({ selectedFiltersCheckbox, changeFilterCheckboxes }) {
             <input
               type="checkbox"
               checked={selectedFiltersCheckbox.threeTransfer}
-              onChange={() => changeFilterCheckboxes('threeTransfer')}
+              onChange={() => dispatch(changeFilterCheckboxes('threeTransfer'))}
               name="transfer"
             />
             <p>3 пересадки</p>
@@ -71,10 +73,10 @@ function Filters({ selectedFiltersCheckbox, changeFilterCheckboxes }) {
   );
 }
 
-const mapStateToProps = (state) => ({ selectedFiltersCheckbox: state.selectedFiltersCheckbox });
+//const mapStateToProps = (state) => ({ selectedFiltersCheckbox: state.selectedFiltersCheckbox });
 
-const mapDispatchToProps = (dispatch) => ({
-  changeFilterCheckboxes: bindActionCreators(changeFilterCheckboxes, dispatch),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Filters);
+// const mapDispatchToProps = (dispatch) => ({
+//   changeFilterCheckboxes: bindActionCreators(changeFilterCheckboxes, dispatch),
+// });
+//
+// export default connect(null, mapDispatchToProps)(Filters);

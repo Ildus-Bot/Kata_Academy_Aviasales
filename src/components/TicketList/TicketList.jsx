@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import React, { useEffect, useMemo } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import md5 from 'md5';
 
+import filterAnArrayOfTickets from '../../utilities/filterAnArrayOfTickets';
+import sortAnArrayOfTickets from '../../utilities/sortAnArrayOfTickets';
 import {
-  asyncGetPackOfTickets,
+  asyncGetAllPackOfTickets,
   asyncGetSearchId,
   changeStateNumberOfFilteredTickets,
   resetStateNumberOfTicketsShown,
@@ -12,103 +14,60 @@ import Ticket from '../Ticket';
 
 import classes from './TicketList.module.css';
 
-function TicketList({
-  tickets,
-  searchId,
-  asyncGetSearchId,
-  asyncGetPackOfTickets,
-  isStop,
-  numberOfTicketsShown,
-  selectedFiltersCheckbox,
-  selectedSortButton,
-  changeStateNumberOfFilteredTickets,
-  resetStateNumberOfTicketsShown,
-}) {
+export default function TicketList() {
+  const tickets = useSelector((state) => state.arrayOfTickets);
+  const searchId = useSelector((state) => state.searchId);
+  const numberOfTicketsShown = useSelector((state) => state.numberOfTicketsShown);
+  const selectedFiltersCheckbox = useSelector((state) => state.selectedFiltersCheckbox);
+  const selectedSortButton = useSelector((state) => state.selectedSortButton);
+  const errorMessage = useSelector((state) => state.errorMessage);
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (!searchId) {
-      asyncGetSearchId();
+      dispatch(asyncGetSearchId());
     }
   }, []);
 
   useEffect(() => {
-    if (searchId && !isStop) {
-      asyncGetPackOfTickets(searchId);
+    if (searchId) {
+      dispatch(asyncGetAllPackOfTickets(searchId));
     }
-  });
+  }, [searchId]);
 
   useEffect(() => {
-    resetStateNumberOfTicketsShown();
+    dispatch(resetStateNumberOfTicketsShown());
   }, [selectedFiltersCheckbox]);
 
   useEffect(() => {
-    changeStateNumberOfFilteredTickets(filteredAndSortedArrayOfTickets.length);
+    if (!errorMessage) {
+      dispatch(changeStateNumberOfFilteredTickets(filteredAndSortedArrayOfTickets.length));
+    }
   }, [selectedFiltersCheckbox, tickets]);
 
-  let filteredArrayOfTickets;
+  const filteredArrayOfTickets = useMemo(
+    () => filterAnArrayOfTickets(tickets, selectedFiltersCheckbox),
+    [tickets, selectedFiltersCheckbox]
+  );
+  const filteredAndSortedArrayOfTickets = useMemo(
+    () => sortAnArrayOfTickets(filteredArrayOfTickets, selectedSortButton),
+    [tickets, selectedFiltersCheckbox, selectedSortButton]
+  );
 
-  if (selectedFiltersCheckbox.all) {
-    filteredArrayOfTickets = tickets;
-  } else if (
-    !selectedFiltersCheckbox.all &&
-    !selectedFiltersCheckbox.threeTransfer &&
-    !selectedFiltersCheckbox.twoTransfer &&
-    !selectedFiltersCheckbox.oneTransfer &&
-    !selectedFiltersCheckbox.withoutTransfer
-  ) {
-    filteredArrayOfTickets = [];
-  } else {
-    filteredArrayOfTickets = tickets.filter((ticket) => {
-      const countStopsThere = ticket.segments[0].stops.length;
-      const countStopsBack = ticket.segments[1].stops.length;
-
-      if (selectedFiltersCheckbox.threeTransfer && (countStopsThere === 3 || countStopsBack === 3)) {
-        return true;
-      }
-
-      if (selectedFiltersCheckbox.twoTransfer && (countStopsThere === 2 || countStopsBack === 2)) {
-        return true;
-      }
-
-      if (selectedFiltersCheckbox.oneTransfer && (countStopsThere === 1 || countStopsBack === 1)) {
-        return true;
-      }
-
-      if (selectedFiltersCheckbox.withoutTransfer && (countStopsThere === 0 || countStopsBack === 0)) {
-        return true;
-      }
-
-      return false;
-    });
+  if (errorMessage) {
+    return <p className={classes['ticket-list__message']}>Что-то пошло не так</p>;
   }
 
-  let filteredAndSortedArrayOfTickets = filteredArrayOfTickets;
-
-  if (filteredArrayOfTickets.length === 0 && tickets.length !== 0) {
+  if (filteredAndSortedArrayOfTickets.length === 0 && tickets.length !== 0) {
     return <p className={classes['ticket-list__message']}>Рейсов, подходящих под заданные фильтры, не найдено</p>;
-  }
-
-  if (selectedSortButton === 'cheap' && isStop) {
-    filteredAndSortedArrayOfTickets = filteredArrayOfTickets.sort(
-      (firstTicket, secondTicket) => firstTicket.price - secondTicket.price
-    );
-  } else if (selectedSortButton === 'fast' && isStop) {
-    filteredAndSortedArrayOfTickets = filteredArrayOfTickets.sort(
-      (firstTicket, secondTicket) => firstTicket.segments[0].duration - secondTicket.segments[0].duration
-    );
-  } else if (selectedSortButton === 'optimal' && isStop) {
-    filteredAndSortedArrayOfTickets = filteredArrayOfTickets.sort(
-      (firstTicket, secondTicket) =>
-        firstTicket.price +
-        firstTicket.segments[0].duration * 100 -
-        (secondTicket.price + secondTicket.segments[0].duration * 100)
-    );
   }
 
   const arrayOfTicketElements = filteredAndSortedArrayOfTickets.map((ticket, index) => {
     if (index < numberOfTicketsShown) {
       return (
         <Ticket
-          key={index}
+          key={md5(`${ticket.segments[0].date}${ticket.segments[1].date}`)}
           price={ticket.price}
           firstSegment={ticket.segments[0]}
           secondSegment={ticket.segments[1]}
@@ -120,23 +79,3 @@ function TicketList({
 
   return <div className={classes['ticket-list']}>{arrayOfTicketElements}</div>;
 }
-
-const mapStateToProps = (state) => ({
-  tickets: state.arrayOfTickets,
-  searchId: state.searchId,
-  isStop: state.isStop,
-  numberOfTicketsShown: state.numberOfTicketsShown,
-  selectedFiltersCheckbox: state.selectedFiltersCheckbox,
-  selectedSortButton: state.selectedSortButton,
-});
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    asyncGetSearchId: bindActionCreators(asyncGetSearchId, dispatch),
-    asyncGetPackOfTickets: bindActionCreators(asyncGetPackOfTickets, dispatch),
-    changeStateNumberOfFilteredTickets: bindActionCreators(changeStateNumberOfFilteredTickets, dispatch),
-    resetStateNumberOfTicketsShown: bindActionCreators(resetStateNumberOfTicketsShown, dispatch),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(TicketList);

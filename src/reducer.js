@@ -1,7 +1,7 @@
 const reducer = (state, action) => {
   if (state === undefined) {
     const initialState = {
-      selectedSortButton: '',
+      selectedSortButton: 'cheap',
       selectedFiltersCheckbox: {
         all: true,
         withoutTransfer: true,
@@ -14,6 +14,7 @@ const reducer = (state, action) => {
       isStop: false,
       numberOfTicketsShown: 5,
       numberOfFilteredTickets: 0,
+      errorMessage: null,
     };
 
     return initialState;
@@ -61,6 +62,12 @@ const reducer = (state, action) => {
       return {
         ...state,
         numberOfFilteredTickets: action.number,
+      };
+
+    case 'changeStateErrorMessage':
+      return {
+        ...state,
+        errorMessage: action.errorMessage,
       };
 
     default:

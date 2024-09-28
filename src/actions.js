@@ -12,40 +12,58 @@ export const resetStateNumberOfTicketsShown = () => ({ type: 'resetStateNumberOf
 
 export const changeStateNumberOfFilteredTickets = (number) => ({ type: 'changeStateNumberOfFilteredTickets', number });
 
+const changeStateErrorMessage = (errorMessage) => ({ type: 'changeStateErrorMessage', errorMessage });
+
+const apiBase = 'https://aviasales-test-api.kata.academy';
+
 export const asyncGetSearchId = () => {
   return (dispatch) => {
-    fetch('https://aviasales-test-api.kata.academy/search')
+    fetch(`${apiBase}/search`)
       .then((res) => {
         if (!res.ok) {
-          throw new Error('Something went wrong.');
+          throw new Error('Что-то пошло не так');
         }
 
         return res.json();
       })
       .then((body) => {
         dispatch(changeStateSearchId(body.searchId));
+      })
+      .catch((err) => {
+        dispatch(changeStateErrorMessage(err.message));
       });
   };
 };
 
-export const asyncGetPackOfTickets = (searchId) => {
-  return (dispatch) => {
-    fetch(`https://aviasales-test-api.kata.academy/tickets?searchId=${searchId}`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error('Something went wrong.');
+export const asyncGetAllPackOfTickets = (searchId) => {
+  return async (dispatch) => {
+    let isStop = false;
+
+    while (!isStop) {
+      try {
+        const res = await asyncGetPackOfTickets(searchId);
+
+        if (!res.ok && res.status < 500) {
+          dispatch(changeStateErrorMessage('Что-то пошло не так'));
+          break;
+        } else if (res.status >= 500) {
+          throw new Error();
         }
 
-        return res.json();
-      })
-      .then((body) => {
-        if (body.stop) {
-          dispatch({ type: 'changeStateStop', isStop: true });
-        }
+        const body = await res.json();
+
         dispatch(changeStateArrayOfTickets(body.tickets));
-      })
-      .catch(() => {
+
+        if (body.stop) {
+          isStop = true;
+        }
+      } catch {
         dispatch(changeStateArrayOfTickets([]));
-      });
+      }
+    }
   };
+};
+
+const asyncGetPackOfTickets = async (searchId) => {
+  return await fetch(`${apiBase}/tickets?searchId=${searchId}`);
 };

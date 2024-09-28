@@ -1,15 +1,13 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { changeSelectedSortButton } from '../../actions';
 
 import classes from './SortButtons.module.scss';
 
-function SortButtons({ activeButton, changeSelectedSortButton, isStop }) {
-  if (!isStop) {
-    return <div className={classes['animated-block']}></div>;
-  }
+export default function SortButtons() {
+  const activeButton = useSelector((state) => state.selectedSortButton);
+  const dispatch = useDispatch();
 
   return (
     <div className={classes['sort-buttons']}>
@@ -20,7 +18,7 @@ function SortButtons({ activeButton, changeSelectedSortButton, isStop }) {
 					${activeButton === 'cheap' && classes.active}
 				`}
         type="button"
-        onClick={() => changeSelectedSortButton('cheap')}
+        onClick={() => dispatch(changeSelectedSortButton('cheap'))}
       >
         САМЫЙ ДЕШЕВЫЙ
       </button>
@@ -30,7 +28,7 @@ function SortButtons({ activeButton, changeSelectedSortButton, isStop }) {
 					${activeButton === 'fast' && classes.active}
 				`}
         type="button"
-        onClick={() => changeSelectedSortButton('fast')}
+        onClick={() => dispatch(changeSelectedSortButton('fast'))}
       >
         САМЫЙ БЫСТРЫЙ
       </button>
@@ -41,18 +39,10 @@ function SortButtons({ activeButton, changeSelectedSortButton, isStop }) {
 					${activeButton === 'optimal' && classes.active}
 				`}
         type="button"
-        onClick={() => changeSelectedSortButton('optimal')}
+        onClick={() => dispatch(changeSelectedSortButton('optimal'))}
       >
         ОПТИМАЛЬНЫЙ
       </button>
     </div>
   );
 }
-
-const mapStateToProps = (state) => ({ activeButton: state.selectedSortButton, isStop: state.isStop });
-
-const mapDispatchToProps = (dispatch) => ({
-  changeSelectedSortButton: bindActionCreators(changeSelectedSortButton, dispatch),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(SortButtons);

@@ -1,12 +1,16 @@
 import React from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { addToStateNumberOfTicketsShown } from '../../actions';
 
 import classes from './ButtonShowMoreTickets.module.scss';
 
-function ButtonShowMoreTickets({ numberOfTicketsShown, addToStateNumberOfTicketsShown, numberOfFilteredTickets }) {
+export default function ButtonShowMoreTickets() {
+  const numberOfTicketsShown = useSelector((state) => state.numberOfTicketsShown);
+  const numberOfFilteredTickets = useSelector((state) => state.numberOfFilteredTickets);
+
+  const dispatch = useDispatch();
+
   if (numberOfFilteredTickets === 0) {
     return;
   }
@@ -23,20 +27,9 @@ function ButtonShowMoreTickets({ numberOfTicketsShown, addToStateNumberOfTickets
     <button
       type="button"
       className={classes['button-show-more']}
-      onClick={() => addToStateNumberOfTicketsShown(numberOfTicketsForRender)}
+      onClick={() => dispatch(addToStateNumberOfTicketsShown(numberOfTicketsForRender))}
     >
       {`ПОКАЗАТЬ ЕЩЕ ${numberOfTicketsForRender} БИЛЕТОВ!`}
     </button>
   );
 }
-
-const mapStateToProps = (state) => ({
-  numberOfTicketsShown: state.numberOfTicketsShown,
-  numberOfFilteredTickets: state.numberOfFilteredTickets,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  addToStateNumberOfTicketsShown: bindActionCreators(addToStateNumberOfTicketsShown, dispatch),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ButtonShowMoreTickets);
