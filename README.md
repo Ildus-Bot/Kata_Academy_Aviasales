@@ -1,1 +1,1 @@
-https://aviasales-jw689nhjd-noioqis-projects.vercel.app/
+https://vercel.live/link/aviasales-7ezkkw7gh-noioqis-projects.vercel.app?via=recents-preview
