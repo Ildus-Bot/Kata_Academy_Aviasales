@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import md5 from 'md5';
 
 import filterAnArrayOfTickets from '../../utilities/filterAnArrayOfTickets';
 import sortAnArrayOfTickets from '../../utilities/sortAnArrayOfTickets';
@@ -63,11 +62,29 @@ export default function TicketList() {
     return <p className={classes['ticket-list__message']}>Рейсов, подходящих под заданные фильтры, не найдено</p>;
   }
 
-  const arrayOfTicketElements = filteredAndSortedArrayOfTickets.map((ticket, index) => {
-    if (index < numberOfTicketsShown) {
-      return (
+  // const arrayOfTicketElements = filteredAndSortedArrayOfTickets.map((ticket, index) => {
+  //   if (index < numberOfTicketsShown) {
+  //     return (
+  //       <Ticket
+  //         key={`${ticket.segments[0].date}${ticket.segments[1].date}`}
+  //         price={ticket.price}
+  //         firstSegment={ticket.segments[0]}
+  //         secondSegment={ticket.segments[1]}
+  //         carrier={ticket.carrier}
+  //       />
+  //     );
+  //   }
+  // });
+
+  const arrayOfTicketElements = [];
+
+  for (let i = 0; i < numberOfTicketsShown; i++) {
+    const ticket = filteredAndSortedArrayOfTickets[i];
+
+    if (ticket) {
+      arrayOfTicketElements.push(
         <Ticket
-          key={md5(`${ticket.segments[0].date}${ticket.segments[1].date}`)}
+          key={`${ticket.segments[0].date}${ticket.segments[1].date}`}
           price={ticket.price}
           firstSegment={ticket.segments[0]}
           secondSegment={ticket.segments[1]}
@@ -75,7 +92,7 @@ export default function TicketList() {
         />
       );
     }
-  });
+  }
 
   return <div className={classes['ticket-list']}>{arrayOfTicketElements}</div>;
 }
